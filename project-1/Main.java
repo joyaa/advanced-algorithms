@@ -12,7 +12,7 @@ public class Main{
     readTSPInstance(io);
     int tour[] = initialTour();
 		for(int i = 0; i < N;++i) {
-			System.out.println(tour[i]);
+			io.println(tour[i]);
 		}
     io.close();
   }	
