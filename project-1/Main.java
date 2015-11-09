@@ -3,10 +3,11 @@ import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.LinkedList;
 import java.lang.Integer;
+import java.util.*;
 
 public class Main{
     private Vertex[] points;
-    private int N;
+    private int N, max; // start0, start1;
     private int[] dcache;
 
     public static void main(String args[]){
@@ -19,16 +20,30 @@ public class Main{
 
         int[] tour = new int[N];
         
+        max = 0; 
+        int min = 2*10^6;
+        int distance;
         dcache = new int[N*N];
         for (int i = 0; i < N; i++) {
             tour[i] = i;
-            for (int j = i; j < N; j++) {
-                dcache[i*N+j] = eucDistanceCompare(i, j);
-                dcache[j*N+i] = dcache[i*N+j];
+            for (int j = i+1; j < N; j++) {
+                distance = eucDistanceCompare(i, j);
+                dcache[i*N+j] = distance;
+                dcache[j*N+i] = distance;
+                if (distance > max)
+                    max = distance;
+                // if (distance < min){
+                //     min = distance;
+                //     start0 = i;
+                //     start1 = j;
+                // }
             }
         }
         
-        tour = initialTour();
+        //tour = initialTour();
+        tour = greedy();
+        //Christofides ch = new Christofides();
+        //tour = ch.christofides(dcache);
 
         improveTourv2(tour);
 
@@ -53,14 +68,63 @@ public class Main{
         }
     }
 
+    //http://lcm.csa.iisc.ernet.in/dsa/node186.html
+    private int[] greedy() {
+        int tour[] = new int[N];
+        int degree[] = new int[N];
+
+        // starting with random edge
+        //Random r = new Random();
+        //int start = r.nextInt(N);
+        
+        // starting with shortest edge
+        // tour[0] = start0;
+        // degree[start0]++;
+        // tour[1] = start1;
+        // degree[start1] = 2;
+        // int i = start1;
+
+        // starting with 0
+        tour[0] = 0;
+        degree[0]++;
+
+        int i = 0;
+        int shortest, dist;
+        int iTemp = 0;
+        int length = 0; //nr of edges, 1 when starting with shortest
+        do {
+            shortest = max+1;
+            for (int j = 0; j < N; ++j) {
+                dist = distance(i,j);
+                if ((i != j) && distance(i,j) < shortest) {
+                    if (degree[j] < 2) {
+                        if ((degree[j] == 0 && length < N-1) || (degree[j] == 1 && length == N-1)) {
+                            iTemp = j;
+                            shortest = dist;
+                        }
+                    }
+                } 
+            }
+            ++length;
+            if (length == N) {
+               break;
+            }
+            tour[length] = iTemp; 
+            degree[iTemp] = 2;
+            i = iTemp;
+            
+        } while (length < N);
+        return tour;
+    }
+
     private int[] initialTour(){
         int tour[] = new int[N];
         boolean used[] = new boolean[N];
         tour[0] = 0;
         used[0] = true;
-        for(int i = 1;i < N; ++i) {
+        for(int i = 1; i < N; ++i) {
             int best = -1;
-            for(int j = 0;j < N; ++j) {
+            for(int j = 0; j < N; ++j) {
                 if(used[j] != true) {
                     if(best == -1)
                         best = j;

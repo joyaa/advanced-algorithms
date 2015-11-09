@@ -2,7 +2,7 @@ import java.util.*;
 
 public class Christofides{
 
-	public Vertex[] solve(Vertex[] points){
+	public int[] christofides(int[] points){
 		int N = points.length;
 
 		// int[][] distanceMatrix = calculateDistanceMatrix(points, N);
@@ -26,13 +26,13 @@ public class Christofides{
 
 		int tspRoute[] = eulerCycle(nodes);
 
-		Vertex[] route = new Vertex[N];
+		// Vertex[] route = new Vertex[N];
 
-		for (int i = 0; i < tspRoute.length; i++) {
-			route[i] = points[tspRoute[i]];
-			//System.out.println(tspRoute[i]);
-		}
-		return route;
+		// for (int i = 0; i < tspRoute.length; i++) {
+		// 	route[i] = points[tspRoute[i]];
+		// 	//System.out.println(tspRoute[i]);
+		// }
+		return tspRoute;
 	}
 
 	public ArrayList<Integer>[] getMultiGraph(Vertex[] p, int N){
@@ -66,17 +66,17 @@ public class Christofides{
 	}
 
 	//Distance between all points, graph in a matrix representation.
-	private int[][] calculateDistanceMatrix(Vertex[] points, int N) {
+	private int[][] calculateDistanceMatrix(int[] points, int N) {
 		int[][] dM = new int[N][N];
 				int dist;
 
 		for(int i = 0; i < N; ++i) {
 		  for(int j = i+1; j < N; ++j) { //POSSIBLE SPEEDUP CHECK j = i+1! 
 		    
-				//double x = Math.pow(points.get(i).x - points.get(j).x, 2);	
-				//double y = Math.pow(points.get(i).y - points.get(j).y, 2);
-				double x = Math.pow(points[i].x - points[j].x, 2);
-				double y = Math.pow(points[i].y - points[j].y, 2);
+				double x = Math.pow(points.get(i).x - points.get(j).x, 2);	
+				double y = Math.pow(points.get(i).y - points.get(j).y, 2);
+				// double x = Math.pow(points[i].x - points[j].x, 2);
+				// double y = Math.pow(points[i].y - points[j].y, 2);
 
 				dist = (int) Math.round(Math.sqrt(x+y));
 			
@@ -99,7 +99,7 @@ public class Christofides{
 			int pred[] = new int[N]; //predecessor node in tree
 
 			for(int i=0;i<N;i++){
-				cost[i] = 2*(10^6); //cost between each node and cheapest connection
+				cost[i] = 2*(10^6); //cost between each node and cheapest connection, inf now
 			}
 
 			//unvisited nodes, starting with all
@@ -108,10 +108,9 @@ public class Christofides{
 				unvisited.add(new Integer(i));
 
 			int currentNode = 0; // starting node
-			cost[0] = 0; //
+			cost[currentNode] = 0; 
 
 			double tempCost;
-			//Integer newNode;
 			double minCost;
 
 			while (!unvisited.isEmpty()) {
@@ -142,14 +141,7 @@ public class Christofides{
 					}
 				}
 			}
-			// System.out.println("Unvisited: " + unvisited.size());
-			// int k = 0;
-			// for (int i = 0; i < inMST.length; i++) {
-			// 	if (inMST[i]) { k++;}
-			// }
-			//System.out.println("Nodes in MST: " + k);
-			
-			//System.out.println(Arrays.toString(pred));
+
 			return pred;
 	}
 
@@ -164,15 +156,13 @@ public class Christofides{
 				countDegrees[tree[i]]++;    			
 		}
 
-		int oddsN = 0;
 		//save odd degree nodes from MST
 		ArrayList<Integer> oddNodes = new ArrayList<>();
 		for (int i = 0; i < N; i++) {
-			//int c = countDegrees[i];
-			//if (((c/2)*2) == c) {
-			if (countDegrees[i] % 2 != 0) {
+			int c = countDegrees[i];
+			if (((c/2)*2) != c) {
+			//if (countDegrees[i] % 2 != 0) {
 				oddNodes.add(i);	//add the node with odd degree
-				oddsN++;
 			}
 		}
 		return oddNodes;
@@ -185,11 +175,9 @@ public class Christofides{
 		ArrayList<Integer> oddNodes = countOddNodes(mst, N);
 		int oddsN = oddNodes.size();
 		//now G' is the graph of all odd nodes with all edges between them 
-		//System.out.println("Odd nodes: " + oddsN);
+
 		Edge edges[][] = new Edge[oddsN][oddsN];
 
-		//greedy method to find min matching
-		//System.out.println("oddsN: " + oddsN);
 		//sort all edges between the odd edges
 		for(int i = 0; i < oddsN; i++) {
 			for(int j = 0; j < oddsN; j++) {
@@ -206,6 +194,7 @@ public class Christofides{
 			Arrays.sort(edges[i]); //sort in ascending order (shortest edge first)
 		}
 
+		//greedy method to find min matching
 		boolean matched[] = new boolean[N];
 		int match[][] = new int[(oddsN/2)][2]; //nr of odd numbered nodes divisble by 2 ???  
 
@@ -259,22 +248,12 @@ public class Christofides{
 			}
 		}
 
-		// for(int i = 0; i < mstN; i++){
-		// 	System.out.println(nodes[i].toString());
-		// }
-
 		return nodes;
 	}
 
 	// possible as the graph now only has even-degree vertices
 	private int[] eulerCycle(ArrayList<Integer> graph[]) {
-			
-		// 		for (ArrayList<Integer> list : graph ){
-		// 	System.out.println("\n");
-		// 	for (int i = 0; i < list.size(); i++) {
-		// 		System.out.print(list.get(i));
-		// 	}
-		// }
+
 
 		ArrayList<Integer> path = new ArrayList<Integer>();
 
@@ -345,30 +324,14 @@ public class Christofides{
 			next = graph[next].get(0);
 		} while (prev != root);
 		
-
-		// for (ArrayList<Integer> list : graph ){
-		// 	System.out.println("\n");
-		// 	for (int i = 0; i < list.size(); i++) {
-		// 		System.out.print(list.get(i));
-		// 	}
-		// }
-		// System.out.println("Path:\n");
-		// for (int i = 0; i < path.size(); i++) {
-		// 		System.out.print(path.get(i));
-		// }
-		
 		//for every nodein path, if it has unused edges,
 		//create cycle from those and add to path
 
 		int p = 0;
 		int tempRoot;
-		int fuck = 0;
-		int fuck1 = 0;
-		int fuck2 = 0;
 		while(p < path.size()) {
 				tempRoot = path.get(p);
-				fuck++;
-				//System.out.println("cycle: " + p);
+
 				if(graph[tempRoot].size() > 0) {
 						//pathnode has unused edges
 						ArrayList<Integer> tempPath = new ArrayList();
@@ -386,9 +349,8 @@ public class Christofides{
 							graph[tempPrev].remove(0);
 
 							li = graph[tempPrev].listIterator();
-							fuck1++;
+
 							while (li.hasNext()) {
-								fuck2++;
 								if (li.next() == tempPrev) {
 									li.remove();
 									break;
@@ -410,15 +372,11 @@ public class Christofides{
 								}
 								i++;
 							}
-							//System.out.println(path.toString());
 						}
-						//p = 0;
 				} else 
 					p++;
 			}
-			//System.out.println("Loops: "+ fuck + " " + fuck1 + " " + fuck2);
-			//System.out.println("Path: "+ path.toString());
-			//System.out.println("Path length: "+ path.size());
+
 			//find shortcuts that skips vertices appearing more than once
 			int[] tspRoute=new int[N];
 			boolean included[]=new boolean[N];
@@ -431,14 +389,6 @@ public class Christofides{
 							p++;
 					}
 			}
-			if(p != graph.length) 
-				//System.out.println("Constructed TSP route too short");
-			
-			for (int i = 0; i < N; i++) {
-			//	System.out.println("Route: "+ tspRoute[i]);
-			}
-
 			return tspRoute;				
 	}
-
 }
