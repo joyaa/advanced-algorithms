@@ -1,21 +1,71 @@
 import random
-N=238140 #6*42*3*5*7*9
+import fileinput
+import sys
+from collections import Counter
+from collections import deque 
+#N=238134299340340 #2^2 3^5 5^1 7^2
+#N=42
+
+def factoring(N): #TODO: fix rabin miller check when d == f
+	primes = []
+	temps = deque()
+	temps.append(N)
+	while temps:
+		f = temps.pop()
+		if isprime(f): 
+			primes.append(f)
+			continue
+		d = pollard(f)
+		if (d == f):
+			temps.append(d)
+		else:
+			temps.append(d)
+			temps.append(f/d)
+	return primes
 
 def pollard (N):
-	i=1
+	if(N % 2 == 0):
+		return 2
+	if(N % 3 == 0):
+		return 3
 	x=random.randint(0, N-1) #small integers
+	p=random.randint(0, N-1)
 	y=x	
-	k=2
 	d=1
-	while d==1 or d==N:
-		i=i+1
-		x = (x*x+1)%N	
+	while d==1:
+		x = ((x)%N+p)%N # TEST BRENTS 	
+		y = (((y)%N+p)^2+p)%N
 		d=gcd(y-x, N)
-		if i==k:
-			y=x
-			k=2*k
-	print d
+		if d == N:
+			return d
 	return d
+
+# Should look at Miller Rabbin instead (a probabilistic algorithm). 
+#This is a simple trial division algorithm
+'''def isprime(x):
+	if x < 2: return False
+	for i in range (2, int(x**0.5)+1):
+		if x % i == 0:
+			return False
+	return True'''
+def isprime(x):
+	if(x<2):
+		return False
+	if(x!=2 and x%2==0):
+		return False
+  	s=x-1
+  	while(s%2==0):
+		s>>=1
+  	for i in xrange(10):
+		a=random.randrange(x-1)+1
+		temp=s
+		mod=pow(a,temp,x)
+		while(temp!=x-1 and mod!=1 and mod!=x-1):
+			mod=(mod*mod)%x
+			temp=temp*2
+		if(mod!=x-1 and temp%2==0):
+			return False
+	return True
 
 #http://www.mathblog.dk/gcd-faceoff/
 #http://www.csie.nuk.edu.tw/~cychen/gcd/Two%20fast%20GCD%20algorithms.pdf
@@ -41,7 +91,7 @@ def gcd_iter(x, y):
 			t>>=1
 		if t>0:
 			y=t
-		else
+		else:
 			x=-t
 		t=y-x
 	return
@@ -50,4 +100,20 @@ def gcd_iter(x, y):
 def gcdR(x, y):
 	return gcd(x, x % y) if y else abs(x)
 
-pollard(N)
+for line in fileinput.input():
+	line = int(line)
+	if line == 0:
+		break
+	primes = factoring(line)
+	primes.sort()
+	#for i in range(0, len(primes)):
+	i = 0
+	while i < len(primes):
+		exp = primes.count(primes[i])
+		print primes[i],
+		sys.stdout.softspace=0
+		print "^",
+		sys.stdout.softspace=0
+		print exp,
+		i += exp
+	print 
