@@ -35,7 +35,7 @@ def pollard (N):
 	while d==1:
 		x = ((x)%N+p)%N # TEST BRENTS 	
 		y = (((y)%N+p)^2+p)%N
-		d=gcd(y-x, N)
+		d=gcd_iter(y-x, N)
 		if d == N:
 			return d
 	return d
@@ -82,7 +82,8 @@ def gcd_iter(x, y):
 	#y >= x > 0
 	k = 1
 	while y&1==0 and x&1==0: #both even
-		y>>=1; x>>=1
+		y>>=1;
+		x>>=1
 		k<<=1
 
 	t = -x if y&1 else y
@@ -94,7 +95,7 @@ def gcd_iter(x, y):
 		else:
 			x=-t
 		t=y-x
-	return
+	return y*k
 	
 
 def gcdR(x, y):
