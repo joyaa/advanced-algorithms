@@ -15,7 +15,7 @@ def factoring(N): #TODO: fix rabin miller check when d == f
 		if isprime(f): 
 			primes.append(f)
 			continue
-		d = pollard(f)
+		d = pollard_brent(f)
 		if (d == f):
 			temps.append(d)
 		else:
@@ -26,8 +26,6 @@ def factoring(N): #TODO: fix rabin miller check when d == f
 def pollard (N):
 	if(N % 2 == 0):
 		return 2
-	if(N % 3 == 0):
-		return 3
 	x=random.randint(0, N-1) #small integers
 	p=random.randint(0, N-1)
 	y=x	
@@ -39,6 +37,34 @@ def pollard (N):
 		if d == N:
 			return d
 	return d
+
+def pollard_brent(N):
+    if N%2==0:
+        return 2
+    y = random.randint(1, N-1)
+    p = random.randint(1, N-1)
+    m = random.randint(1, N-1)
+    d,r,q = 1,1,1
+    while d==1:
+        x = y
+        for i in range(r):
+            y = ((y*y)%N+p)%N
+            k = 0
+        while (k<=r and d==1):
+            ys = y
+            for i in range(min(m,r-k)):
+                y = ((y*y)%N+p)%N
+                q = q*(abs(x-y))%N
+            d = gcd(q,N)
+            k = k + m
+        r = r*2
+    if d==N:
+            while True:
+                ys = ((ys*ys)%N+p)%N
+                d = gcd(abs(x-ys),N)
+                if d>1:
+                    break
+    return d 
 
 # Should look at Miller Rabbin instead (a probabilistic algorithm). 
 #This is a simple trial division algorithm
