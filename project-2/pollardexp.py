@@ -16,7 +16,7 @@ def factoring(N): #TODO: fix rabin miller check when d == f
 		if isprime(f): 
 			primes.append(f)
 			continue
-		d = pollard_brent(f)
+		d = pollard(f)
 		if (d == f):
 			temps.append(d)
 		else:
@@ -56,13 +56,13 @@ def pollard_brent(N):
             for i in range(min(m,r-k)):
                 y = ((y*y)%N+p)%N
                 q = q*(abs(x-y))%N
-            d = gcd2(q,N)
+            d = gcd_iter(q,N)
             k = k + m
         r = r*2
     if d==N:
 		while True:
 			ys = ((ys*ys)%N+p)%N
-			d = gcd2(abs(x-ys),N)
+			d = gcd_iter(abs(x-ys),N)
 			if d>1:
 				break
     return d 
@@ -138,24 +138,28 @@ def gcd_iter(x, y):
 def gcdR(x, y):
 	return gcd(x, x % y) if y else abs(x)
 
-start = time.clock()
+factors = []
 for line in fileinput.input():
-	
 	line = int(line)
+	factors.append(line)
 	if line == 0:
 		break
-	primes = factoring(line)
-	primes.sort()
-	#for i in range(0, len(primes)):
-	i = 0
-	while i < len(primes):
-		exp = primes.count(primes[i])
-		print primes[i],
-		sys.stdout.softspace=0
-		print "^",
-		sys.stdout.softspace=0
-		print exp,
-		i += exp
-	print 
-time = time.clock()-start
+
+start = time.clock()
+for j in range(0, 100):
+	for line in factors:
+		if line == 0:
+			break
+		primes = factoring(line)
+		'''primes.sort()
+		i = 0
+		while i < len(primes):
+			exp = primes.count(primes[i])
+			print primes[i],
+			sys.stdout.softspace=0
+			print "^",
+			sys.stdout.softspace=0
+			print exp,
+			i += exp'''
+time = (time.clock()-start)/100
 print time
