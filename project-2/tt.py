@@ -1,14 +1,12 @@
 import random
-import time
 import fileinput
 import sys
 from collections import deque 
 
-def factoring(N): #TODO: fix rabin miller check when d == f
+def factoring(N):
     primes = []
     temps = deque()
     temps.append(N)
-    check = False
     while temps:
         f = temps.pop()
         if isprime(f): 
@@ -22,12 +20,13 @@ def factoring(N): #TODO: fix rabin miller check when d == f
             temps.append(f/d)
     return primes
 
+
 def pollard_brent(N):
     if N%2==0:
         return 2
     y = random.randint(1, N-1)
     p = random.randint(1, N-1)
-    m = random.randint(1, N-1)
+    m = 1000
     d,r,q = 1,1,1
     while d==1:
         x = y
@@ -41,7 +40,7 @@ def pollard_brent(N):
                 q = q*(abs(x-y))%N
             d = gcd(q,N)
             k = k + m
-        r = r*2
+        r <<= 1
     if d==N:
         while True:
             ys = ((ys*ys)%N+p)%N
@@ -55,9 +54,6 @@ def isprime(x):
                 return False
         if(x!=2 and x%2==0):
                 return False
-        if(x>257):
-                if(smallPrimes(x)):
-                        return False
         s=x-1
         while(s%2==0):
                 s>>=1
@@ -71,12 +67,6 @@ def isprime(x):
                 if(mod!=x-1 and temp%2==0):
                         return False
         return True
-
-def smallPrimes(x):
-        ans = gcd(x, 16516447045902521732188973253623425320896207954043566485360902980990824644545340710198976591011245999110)
-        if(ans > 1 and ans != x):
-                return True
-        return False
 
 def powfunc(a,b,c):
     x = 1
@@ -108,4 +98,3 @@ for line in fileinput.input():
         print exp,
         i += exp
     print 
-
