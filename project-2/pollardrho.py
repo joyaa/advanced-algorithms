@@ -21,7 +21,9 @@ def factoring(N):
             temps.append(f/d)
     return primes
 
+
 def pollard_rho(N):
+    global iterations
     if(N % 2 == 0):
         return 2
     x=random.randint(0, N-1) #small integers
@@ -33,21 +35,25 @@ def pollard_rho(N):
         y = (y*y+p)%N
         y = (y*y+p)%N
         d=gcd(y-x, N)
+        iterations = iterations + 1
         if d == N:
             return d
     return d
 
-'''
-def isprime(x):
+
+def isprimex(x):
     #if x < 2: return False
     if x == 2: return True
     if x < 2 or x%2 == 0: return False
-
-    for i in range (2, int(x**0.5)+1):
+    limit = int(x**0.5)+1
+    i = 2
+    while i < limit:
+    #for i in range (2, int(x**0.5)+1):
         if x % i == 0:
             return False
-    return True                                                 
-'''
+        i +=1
+    return True
+
 #Miller-Rabbin
 def isprime(x):
         if(x<2):
@@ -60,7 +66,7 @@ def isprime(x):
         for i in xrange(10):
                 a=1+random.randint(1, x-1)
                 temp=s
-                mod=pow(a,temp,x)
+                mod=powfunc(a,temp,x)
                 while(temp!=x-1 and mod!=1 and mod!=x-1):
                         mod=(mod*mod)%x
                         temp=temp*2
@@ -106,10 +112,14 @@ def gcd(x, y):
             x=-t
         t=y-x
     return y*k
-'''
 
+'''
+'''
 start = time.clock()
+
+iterations = 0
 for line in fileinput.input():
+    iterations = 0
     line = int(line)
     if line == 0:
         break
@@ -125,10 +135,12 @@ for line in fileinput.input():
         sys.stdout.softspace=0
         print exp,
         i += exp
-    print 
+    print
+    print iterations
 time = (time.clock()-start)
 print time
 '''
+
 factors = []
 for line in fileinput.input():
     line = int(line)
@@ -136,6 +148,7 @@ for line in fileinput.input():
     if line == 0:
         break
 
+iterations = []
 start = time.clock()
 for j in range(0, 100):
     for line in factors:
@@ -144,4 +157,3 @@ for j in range(0, 100):
         primes = factoring(line)
 time = (time.clock()-start)/100
 print time
-#'''

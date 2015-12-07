@@ -73,7 +73,7 @@ def isprime(x):
         for i in xrange(10):
                 a=1+random.randint(1, x-1)
                 temp=s
-                mod=pow(a,temp,x)
+                mod=powfunc(a,temp,x)
                 while(temp!=x-1 and mod!=1 and mod!=x-1):
                         mod=(mod*mod)%x
                         temp=temp*2
@@ -93,6 +93,8 @@ def powfunc(a,b,c):
     return x
 
 def gcd(x, y):
+    global iterations
+    iterations = iterations + 1
     while y:
         x, y = y, x%y
     return abs(x)
@@ -121,8 +123,10 @@ def gcd(x, y):
     return y*k
 '''
 
-
+start = time.clock()
+iterations = 0
 for line in fileinput.input():
+    iterations = 0
     line = int(line)
     if line == 0:
         break
@@ -138,10 +142,13 @@ for line in fileinput.input():
         sys.stdout.softspace=0
         print exp,
         i += exp
-    print 
+    print
+    print iterations
 
-
+time = (time.clock()-start)/100
+print time
 '''
+
 factors = []
 for line in fileinput.input():
     line = int(line)
