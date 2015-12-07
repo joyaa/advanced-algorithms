@@ -75,6 +75,8 @@ def pollard_brent(N):
 		if x % i == 0:
 			return False
 	return True'''
+
+#Miller-Rabbin
 def isprime(x):
 	if(x<2):
 		return False
@@ -111,7 +113,7 @@ def gcd(x, y):
 	while y:
 		x, y = y, x%y
 	return abs(x)
-# Iterative binary algorithm ???
+# Iterative binary algorithm 
 def gcd_iter(x, y):
 	x = abs(x)
 	if x == 0:
